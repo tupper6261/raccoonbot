@@ -1,4 +1,4 @@
-python-3.10.4
+python-3.10.10
 aiohttp==3.7.4.post0
 async-generator==1.10
 async-timeout==3.0.1
