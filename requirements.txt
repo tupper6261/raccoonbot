@@ -14,7 +14,6 @@ configparser==5.2.0
 crayons==0.4.0
 cryptography==36.0.1
 Cython==0.29.28
-cytoolz==0.11.2
 et-xmlfile==1.1.0
 eth-abi==2.1.1
 eth-account==0.5.7
@@ -30,7 +29,6 @@ idna==3.3
 ipfshttpclient==0.8.0a2
 jsonschema==4.5.1
 lru-dict==1.1.7
-lxml==4.7.1
 multiaddr==0.0.9
 multidict==5.2.0
 netaddr==0.8.0
