@@ -64,7 +64,7 @@ async def collect(ctx):
     cur.execute(command)
     status = cur.fetchall()
     if status == []:
-        command = "insert into raccooncollect (discord_user_id, balance, cooldown_time, collect_cooldown_time) values ({0}, 0, {1})".format(member.id, int(time.time()), int(time.time()*10))
+        command = "insert into raccooncollect (discord_user_id, balance, cooldown_time, collect_cooldown_time) values ({0}, 0, {1}, {2})".format(member.id, int(time.time()), int(time.time()*10))
         cur.execute(command)
         conn.commit()
         account = member.id
