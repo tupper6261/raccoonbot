@@ -201,16 +201,13 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     assignmentEmbed.title = "Loading..."
     assignmentEmbed.description = "This could take up to 5 minutes."
     message = await ctx.respond(embed = assignmentEmbed, view = assignmentView)
-    output = ["a"]
-    '''
     output = replicate.run(
         "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
         input={"prompt": prompt}
     )
-    '''
     print (output)
     assignmentEmbed.title = prompt
-    assignmentEmbed.embed = output[0]
+    assignmentEmbed.image = output[0]
     await message.edit_original_message(embed = assignmentEmbed)
                     
 
