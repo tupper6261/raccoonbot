@@ -16,6 +16,7 @@ import json
 import requests
 import datetime
 import asyncio
+import replicate
 
 from web3 import Web3
 
