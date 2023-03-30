@@ -1,5 +1,5 @@
 #RaCC0on Bot. Copyright Timothy Marshall Upper, 2023. All Rights Reserved.
-#Version 1.1 - March 7, 2022
+#Version 2.0 - March 30, 2022
 
 from __future__ import print_function
 import os
@@ -70,6 +70,7 @@ async def collect(ctx):
         account = member.id
         balance = 0
         eligibleToClaim = int(time.time())
+        collectCooldown = int(time.time()*10)
     else:
         account = status[0]
         eligibleToClaim = account[1]
@@ -166,7 +167,7 @@ async def collect(ctx):
 @bot.slash_command(guild_ids=[960007772903194624], description = "Reset a user's cooldown.")
 async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you want to reset?")):
     guild = bot.get_guild(960007772903194624)
-    #if the user isn't a supermod or a nifty's staff, don't let them run the command
+    #if the user isn't tupper, don't let them run the command
     if ctx.author.id != 710139786404298822:
         response = random.randint(1,5)
         if response == 1:
@@ -189,7 +190,25 @@ async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you
     cur.close()
     conn.commit()
     conn.close()
-    await ctx.respond(user.mention + "'s cooldown has been reset!")    
+    await ctx.respond(user.mention + "'s cooldown has been reset!")
+
+#Defines the clone slash command
+@bot.slash_command(guild_ids=[960007772903194624], description = "Generate a RaCC0on clone")
+async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like to generate")):
+    assignmentView = View(timeout = None)
+    assignmentEmbed = discord.Embed(color = 0x000000)
+    assignmentEmbed.title = "Loading..."
+    assignmentEmbed.description = "This could take up to 5 minutes..."
+    await interaction.response.send_message(embed = assignmentEmbed, ephemeral = True, view = assignmentView)
+    output = replicate.run(
+        "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
+        input={"prompt": prompt}
+    )
+    print(output)
+    assignmentEmbed.title = "Loaded"
+    assignmentEmbed.description = ""
+    await interaction.edit_original_message(embed = assignmentEmbed)
+                    
 
 #Runs the bot using the TOKEN defined in the environmental variables.         
 bot.run(TOKEN)
