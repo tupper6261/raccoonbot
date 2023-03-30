@@ -211,7 +211,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     print (output)
     assignmentEmbed.title = prompt
     assignmentEmbed = output[0]
-    await message.response.edit_message(embed = assignmentEmbed)
+    await message.response.edit_original_message(embed = assignmentEmbed)
                     
 
 #Runs the bot using the TOKEN defined in the environmental variables.         
