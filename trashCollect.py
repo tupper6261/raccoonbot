@@ -205,11 +205,10 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
         "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
         input={"prompt": prompt}
     )
+    print (output)
     assignmentEmbed.title = prompt
     assignmentEmbed = output[0]
-    await ctx.send(embed = assignmentEmbed)
-    await ctx.send(ctx.author.mention + ", your image is ready!")
-    await message.delete()
+    await ctx.response.edit_original_message(embed = assignmentEmbed)
                     
 
 #Runs the bot using the TOKEN defined in the environmental variables.         
