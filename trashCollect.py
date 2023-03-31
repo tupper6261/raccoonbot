@@ -214,12 +214,12 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     output = ['https://images-ext-1.discordapp.net/external/Mgf4UJ0ClaO01b5F6nJA16wCUHPxDOsegO_IolMRi-c/https/replicate.delivery/pbxt/qVHemwTShB1ydqUE4KnpNXhzonSah3p3pKSCj3BhDpGtznWIA/out-0.png?width=530&height=530',
               'https://images-ext-1.discordapp.net/external/gt18GJZ7vTvYZ_bPaDCNTmO7XwEUlwkAzWl4fsdA6bY/https/replicate.delivery/pbxt/VilfLcywetr7vk8eCPMGvDtP9456DnwwtgON4Fd5AQ66Lf0CB/out-0.png?width=530&height=530']
 
-    await ctx.send(ctx.author.mention + ", 4 results are given below!")
+    await ctx.channel.send(ctx.author.mention + ", 4 results are given below!")
     for image in output:
         assignmentEmbed.title = originalPrompt
         assignmentEmbed.description = ""
         assignmentEmbed.set_image(url=output[0])
-        await ctx.send(embed = assignmentEmbed)
+        await ctx.channel.send(embed = assignmentEmbed)
         #await message.edit_original_message(embed = assignmentEmbed)
                     
 
