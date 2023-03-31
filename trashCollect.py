@@ -202,6 +202,7 @@ def run_replicate(prompt):
 #Defines the clone slash command
 @bot.slash_command(guild_ids=[960007772903194624], description = "Generate a RaCC0on clone")
 async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like to generate")):
+    originalPrompt = prompt
     prompt = "racc0ons, full_body, " + prompt
     assignmentView = View(timeout = None)
     assignmentEmbed = discord.Embed(color = 0x000000)
@@ -211,7 +212,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
 
     output = await asyncio.to_thread(run_replicate, prompt)
     
-    assignmentEmbed.title = prompt
+    assignmentEmbed.title = originalPrompt
     assignmentEmbed.description = ""
     assignmentEmbed.set_image(url=output[0])
     await message.edit_original_message(embed = assignmentEmbed)
