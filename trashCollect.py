@@ -193,6 +193,12 @@ async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you
     conn.close()
     await ctx.respond(user.mention + "'s cooldown has been reset!")
 
+async def run_replicate(prompt):
+    return replicate.run(
+        "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
+        input={"prompt": prompt}
+    )
+
 #Defines the clone slash command
 @bot.slash_command(guild_ids=[960007772903194624], description = "Generate a RaCC0on clone")
 async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like to generate")):
@@ -201,11 +207,13 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     assignmentEmbed.title = "Loading..."
     assignmentEmbed.description = "This could take up to 5 minutes."
     message = await ctx.respond(embed = assignmentEmbed, view = assignmentView)
-    output = replicate.run(
-        "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
-        input={"prompt": prompt}
-    )
+
+    '''
+    output = await asyncio.to_thread(run_replicate, prompt)
+    '''
+    output = ['https://media.discordapp.net/attachments/1078786252888887396/1091080626549039206/out-3.png']
     print (output)
+    
     assignmentEmbed.title = prompt
     assignmentEmbed.description = ""
     assignmentEmbed.set_image(output[0])
