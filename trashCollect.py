@@ -216,7 +216,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     
     assignmentEmbed.title = prompt
     assignmentEmbed.description = ""
-    assignmentEmbed.set_image(output[0])
+    assignmentEmbed.set_image(url=output[0])
     await message.edit_original_message(embed = assignmentEmbed)
                     
 
