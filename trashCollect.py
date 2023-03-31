@@ -194,7 +194,7 @@ async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you
     await ctx.respond(user.mention + "'s cooldown has been reset!")
 
 async def run_replicate(prompt):
-    return replicate.run(
+    return await replicate.run(
         "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
         input={"prompt": prompt}
     )
