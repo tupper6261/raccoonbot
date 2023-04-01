@@ -208,8 +208,8 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     assignmentEmbed = discord.Embed(color = 0x000000)
     assignmentEmbed.title = "Loading..."
     assignmentEmbed.description = "This could take up to 5 minutes."
-    message = await ctx.send("test")
-    '''
+    #message = await ctx.send("test")
+    #'''
     message = await ctx.respond(embed = assignmentEmbed, view = assignmentView)
 
     output = await asyncio.to_thread(run_replicate, prompt)
@@ -223,7 +223,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     assignmentEmbed.set_image(url=output[0])
     #await ctx.channel.send(embed = assignmentEmbed)
     await message.edit_original_message(embed = assignmentEmbed)
-    '''
+    #'''
                     
 
 #Runs the bot using the TOKEN defined in the environmental variables.         
