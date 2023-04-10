@@ -208,7 +208,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     originalPrompt = prompt
     prompt = "racc0ons, full_body, " + prompt
     assignmentView = View(timeout=None)
-    message1 = await ctx.channel.send("**Loading...**")
+    message1 = await ctx.respond("**Loading...**")
     message2 = await ctx.channel.send("https://tenor.com/view/raccoon-gif-5614710")
     message3 = await ctx.channel.send("This could take up to 5 minutes.")
 
@@ -218,7 +218,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
         'https://i.ibb.co/0sF1B1W/blue-square.png',
         'https://upload.wikimedia.org/wikipedia/commons/9/9b/Greensquare.png'
     ]
-    output = await asyncio.to_thread(run_replicate, prompt)
+    #output = await asyncio.to_thread(run_replicate, prompt)
 
     # Load the images and store them in a list
     images = []
@@ -251,7 +251,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     embed = discord.Embed(title=originalPrompt, color = 0x000000)
     embed.set_image(url=uploaded_image_url)
     
-    response = await ctx.respond(embed = embed)
+    response = await message1.edit_original_message(embed = embed)
 
     # Get the necessary IDs
     server_id = ctx.guild.id
