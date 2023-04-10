@@ -220,7 +220,6 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
         'https://images-ext-1.discordapp.net/external/-LwPX-YnPt6v40R9eGpfa5cpyRGeB-b0GWstIWuZJqY/https/media.tenor.com/Y0MeIF9AI1kAAAPo/ummmmmm-excuse-me.mp4'
     ]
 
-    assignmentEmbed = discord.Embed(color=0x000000)
     assignmentEmbed.title = originalPrompt
     assignmentEmbed.description = ""
     i = 1
@@ -239,7 +238,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     jump_url = f"https://discord.com/channels/{server_id}/{channel_id}/{message_id}"
 
     # Send the message with the jump URL
-    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! [Jump to Message]({jump_url})")
+    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! [Jump to Message] --> {jump_url}")
     
     #await ctx.channel.send(embed = assignmentEmbed)
     #assignmentEmbed.set_image(url=output[0])
