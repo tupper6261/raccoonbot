@@ -220,7 +220,10 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     ]
 
     # Load the images and store them in a list
-    images = [Image.open(BytesIO(requests.get(url).content)) for url in output]
+    images = []
+    for url in output:
+        print (url)
+        images.append(Image.open(BytesIO(requests.get(url).content)))
 
      # Create a new image to combine the four images
     combined_image = Image.new('RGB', (images[0].width * 2, images[0].height * 2))
