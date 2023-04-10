@@ -218,6 +218,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
         'https://i.ibb.co/0sF1B1W/blue-square.png',
         'https://upload.wikimedia.org/wikipedia/commons/9/9b/Greensquare.png'
     ]
+    output = await asyncio.to_thread(run_replicate, prompt)
 
     # Load the images and store them in a list
     images = []
