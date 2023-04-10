@@ -206,39 +206,37 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     originalPrompt = prompt
     prompt = "racc0ons, full_body, " + prompt
     assignmentView = View(timeout=None)
-    assignmentEmbed = discord.Embed(color=0x000000)
-    assignmentEmbed.title = "Loading..."
-    assignmentEmbed.set_image(url="https://tenor.com/view/raccoon-gif-5614710")
-    assignmentEmbed.description = "This could take up to 5 minutes."
-
-    message = await ctx.respond(embed=assignmentEmbed, view=assignmentView)
+    await ctx.channel.send("**Loading...**")
+    await ctx.channel.send("https://tenor.com/view/raccoon-gif-5614710")
+    await ctx.channel.send("This could take up to 5 minutes.")
 
     output = [
-        'https://tenor.com/view/thank-you-so-much-for-this-it-was-entirely-unhelpful-david-david-rose-dan-levy-schitts-creek-gif-20107378',
-        'https://tenor.com/view/whatever-you-say-gif-26555309',
-        'https://tenor.com/view/i-dont-want-you-leave-anna-faris-christy-mom-stay-with-me-gif-19831475',
-        'https://images-ext-1.discordapp.net/external/-LwPX-YnPt6v40R9eGpfa5cpyRGeB-b0GWstIWuZJqY/https/media.tenor.com/Y0MeIF9AI1kAAAPo/ummmmmm-excuse-me.mp4'
+        'https://www.iconsdb.com/icons/preview/black/square-xxl.png',
+        'https://www.cac.cornell.edu/wiki/images/4/44/White_square.png',
+        'https://www.seekpng.com/png/full/895-8952630_blue-square-wrapping-paper.png',
+        'https://upload.wikimedia.org/wikipedia/commons/9/9b/Greensquare.png'
     ]
 
-    assignmentEmbed.title = originalPrompt
-    assignmentEmbed.description = ""
-    i = 1
-    for image in output:
-        assignmentEmbed.add_field(name="Image " + str(i), value="![Image " + str(i) + "](" + image + ")", inline=False)
-        i += 1
+    # Load the images and store them in a list
+    images = [Image.open(BytesIO(requests.get(url).content)) for url in output]
 
-    edited_message = await message.edit_original_message(embed=assignmentEmbed)
+     # Create a new image to combine the four images
+    combined_image = Image.new('RGB', (images[0].width * 2, images[0].height * 2))
 
-    # Get the necessary IDs
-    server_id = ctx.guild.id
-    channel_id = ctx.channel.id
-    message_id = edited_message.id
+    # Paste the images onto the new image
+    combined_image.paste(images[0], (0, 0))
+    combined_image.paste(images[1], (images[0].width, 0))
+    combined_image.paste(images[2], (0, images[0].height))
+    combined_image.paste(images[3], (images[0].width, images[0].height))
 
-    # Create the jump URL
-    jump_url = f"https://discord.com/channels/{server_id}/{channel_id}/{message_id}"
+    # Save the combined image to a BytesIO object
+    image_data = BytesIO()
+    combined_image.save(image_data, format='PNG')
+    image_data.seek(0)
 
-    # Send the message with the jump URL
-    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! [Jump to Message] --> {jump_url}")
+    await ctx.channel.send("**"+ originalPrompt +"**")
+    await ctx.respond(file=discord.File(image_data, 'combined_image.png'))
+    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready!")
     
     #await ctx.channel.send(embed = assignmentEmbed)
     #assignmentEmbed.set_image(url=output[0])
