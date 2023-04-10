@@ -72,8 +72,6 @@ async def collect(ctx):
         balance = 0
         eligibleToClaim = int(time.time())
         collectCooldown = int(time.time()*10)
-        fannyPack = False
-        backpack = False
     else:
         account = status[0]
         eligibleToClaim = account[1]
@@ -198,52 +196,33 @@ async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you
 def run_replicate(prompt):
     return replicate.run(
         "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
-        input={"prompt": prompt, "num_outputs": 4}
+        input={"prompt": prompt}
     )
 
-@bot.slash_command(guild_ids=[960007772903194624], description="Generate a RaCC0on clone")
+#Defines the clone slash command
+@bot.slash_command(guild_ids=[960007772903194624], description = "Generate a RaCC0on clone")
 async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like to generate")):
     originalPrompt = prompt
     prompt = "racc0ons, full_body, " + prompt
-    assignmentView = View(timeout=None)
-    assignmentEmbed = discord.Embed(color=0x000000)
+    assignmentView = View(timeout = None)
+    assignmentEmbed = discord.Embed(color = 0x000000)
     assignmentEmbed.title = "Loading..."
-    assignmentEmbed.set_image(url="https://tenor.com/view/raccoon-gif-5614710")
     assignmentEmbed.description = "This could take up to 5 minutes."
+    #message = await ctx.send("test")
+    #'''
+    message = await ctx.respond(embed = assignmentEmbed, view = assignmentView)
 
-    message = await ctx.respond(embed=assignmentEmbed, view=assignmentView)
+    output = await asyncio.to_thread(run_replicate, prompt)
+    #output = ['https://images-ext-1.discordapp.net/external/Mgf4UJ0ClaO01b5F6nJA16wCUHPxDOsegO_IolMRi-c/https/replicate.delivery/pbxt/qVHemwTShB1ydqUE4KnpNXhzonSah3p3pKSCj3BhDpGtznWIA/out-0.png?width=530&height=530',
+    #         'https://images-ext-1.discordapp.net/external/gt18GJZ7vTvYZ_bPaDCNTmO7XwEUlwkAzWl4fsdA6bY/https/replicate.delivery/pbxt/VilfLcywetr7vk8eCPMGvDtP9456DnwwtgON4Fd5AQ66Lf0CB/out-0.png?width=530&height=530']
 
-    output = [
-        'https://tenor.com/view/thank-you-so-much-for-this-it-was-entirely-unhelpful-david-david-rose-dan-levy-schitts-creek-gif-20107378',
-        'https://tenor.com/view/whatever-you-say-gif-26555309',
-        'https://tenor.com/view/i-dont-want-you-leave-anna-faris-christy-mom-stay-with-me-gif-19831475',
-        'https://images-ext-1.discordapp.net/external/-LwPX-YnPt6v40R9eGpfa5cpyRGeB-b0GWstIWuZJqY/https/media.tenor.com/Y0MeIF9AI1kAAAPo/ummmmmm-excuse-me.mp4'
-    ]
-
-    assignmentEmbed = discord.Embed(color=0x000000)
+    #await ctx.channel.send(ctx.author.mention + ", 4 results are given below!")
+    #for image in output:
     assignmentEmbed.title = originalPrompt
     assignmentEmbed.description = ""
-    i = 1
-    for image in output:
-        assignmentEmbed.add_field(name="Image " + str(i), value="![Image " + str(i) + "](" + image + ")", inline=False)
-        i += 1
-
-    edited_message = await message.edit_original_message(embed=assignmentEmbed)
-
-    # Get the necessary IDs
-    server_id = ctx.guild.id
-    channel_id = ctx.channel.id
-    message_id = edited_message.id
-
-    # Create the jump URL
-    jump_url = f"https://discord.com/channels/{server_id}/{channel_id}/{message_id}"
-
-    # Send the message with the jump URL
-    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! [Jump to Message]({jump_url})")
-    
+    assignmentEmbed.set_image(url=output[0])
     #await ctx.channel.send(embed = assignmentEmbed)
-    #assignmentEmbed.set_image(url=output[0])
-    #
+    await message.edit_original_message(embed = assignmentEmbed)
     #'''
                     
 
