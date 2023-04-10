@@ -208,9 +208,9 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     originalPrompt = prompt
     prompt = "racc0ons, full_body, " + prompt
     assignmentView = View(timeout=None)
-    await ctx.channel.send("**Loading...**")
-    await ctx.channel.send("https://tenor.com/view/raccoon-gif-5614710")
-    await ctx.channel.send("This could take up to 5 minutes.")
+    message1 = await ctx.channel.send("**Loading...**")
+    message2 = await ctx.channel.send("https://tenor.com/view/raccoon-gif-5614710")
+    message3 = await ctx.channel.send("This could take up to 5 minutes.")
 
     output = [
         'https://www.iconsdb.com/icons/preview/black/square-xxl.png',
@@ -236,9 +236,29 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     combined_image.save(image_data, format='PNG')
     image_data.seek(0)
 
-    await ctx.channel.send("**"+ originalPrompt +"**")
-    await ctx.respond(file=discord.File(image_data, 'combined_image.png'))
-    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready!")
+    # Upload the image as an attachment
+    image_file = discord.File(image_data, 'combined_image.png')
+    uploaded_image = await ctx.channel.send(file=image_file)
+
+    # Create an embed with the uploaded image as its image field
+    embed = discord.Embed(title=originalPrompt, color = "#000000")
+    embed.set_image(url=uploaded_image_url)
+    
+    response = await ctx.respond(embed = embed)
+
+    # Get the necessary IDs
+    server_id = ctx.guild.id
+    channel_id = ctx.channel.id
+    message_id = response.id
+
+    # Create the jump URL
+    jump_url = f"https://discord.com/channels/{server_id}/{channel_id}/{message_id}"
+    
+    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! Jump to Message --> {jump_url}")
+
+    await message1.delete()
+    await message2.delete()
+    await message3.delete()
     
     #await ctx.channel.send(embed = assignmentEmbed)
     #assignmentEmbed.set_image(url=output[0])
