@@ -244,7 +244,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     uploaded_image = await ctx.channel.send(file=image_file)
 
     # Create an embed with the uploaded image as its image field
-    embed = discord.Embed(title=originalPrompt, color = "#000000")
+    embed = discord.Embed(title=originalPrompt, color = 0x000000)
     embed.set_image(url=uploaded_image_url)
     
     response = await ctx.respond(embed = embed)
