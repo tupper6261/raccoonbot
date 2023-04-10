@@ -243,6 +243,9 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     image_file = discord.File(image_data, 'combined_image.png')
     uploaded_image = await ctx.channel.send(file=image_file)
 
+    # Get the URL of the uploaded image
+    uploaded_image_url = uploaded_image.attachments[0].url
+
     # Create an embed with the uploaded image as its image field
     embed = discord.Embed(title=originalPrompt, color = 0x000000)
     embed.set_image(url=uploaded_image_url)
@@ -262,6 +265,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     await message1.delete()
     await message2.delete()
     await message3.delete()
+    await uploaded_image.delete()
     
     #await ctx.channel.send(embed = assignmentEmbed)
     #assignmentEmbed.set_image(url=output[0])
