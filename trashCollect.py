@@ -17,6 +17,8 @@ import requests
 import datetime
 import asyncio
 import replicate
+from io import BytesIO
+from PIL import Image
 
 from web3 import Web3
 
