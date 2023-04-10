@@ -251,7 +251,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     embed = discord.Embed(title=originalPrompt, color = 0x000000)
     embed.set_image(url=uploaded_image_url)
     
-    response = await message1.edit_original_message(embed = embed)
+    response = await message1.edit_original_message(content = "", embed = embed)
 
     # Get the necessary IDs
     server_id = ctx.guild.id
@@ -263,7 +263,6 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     
     await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! Jump to Message --> {jump_url}")
 
-    await message1.delete()
     await message2.delete()
     await message3.delete()
     await uploaded_image.delete()
