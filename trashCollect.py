@@ -215,7 +215,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     output = [
         'https://www.iconsdb.com/icons/preview/black/square-xxl.png',
         'https://www.cac.cornell.edu/wiki/images/4/44/White_square.png',
-        'https://www.seekpng.com/png/full/895-8952630_blue-square-wrapping-paper.png',
+        'https://i.ibb.co/0sF1B1W/blue-square.png',
         'https://upload.wikimedia.org/wikipedia/commons/9/9b/Greensquare.png'
     ]
 
