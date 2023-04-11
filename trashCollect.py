@@ -203,7 +203,7 @@ async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you
 def run_replicate(prompt):
     return replicate.run(
         "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
-        input={"prompt": prompt, "num_outputs": 4}
+        input={"prompt": prompt, "num_outputs": 4, "height": 512, "width": 512}
     )
 
 #Defines the clone slash command
