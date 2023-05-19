@@ -394,7 +394,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     #Delete the "loading" etc. messages to keep the channel clean.
     #await message2.delete()
     await message3.delete()
-    await uploaded_image.delete()                    
+    #await uploaded_image.delete()                    
 
 #Runs the bot using the TOKEN defined in the environmental variables.         
 bot.run(TOKEN)
