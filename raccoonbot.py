@@ -85,9 +85,12 @@ class ImagesView(View):
         self.images = images
 
         for i in range(4):
-            self.add_item(Button(style=discord.ButtonStyle.primary, label=f"Image {i+1}", custom_id=f"image_{i}"))
+            # Add callback function for each button
+            button = Button(style=discord.ButtonStyle.primary, label=f"Image {i+1}", custom_id=f"image_{i}")
+            button.callback = self.on_button_click
+            self.add_item(button)
 
-    async def on_click(self, interaction: Interaction):
+    async def on_button_click(self, interaction: Interaction):
         print ("here")
         # Find the image number from the button's custom_id
         image_number = int(interaction.data["custom_id"].split('_')[1])
@@ -95,11 +98,11 @@ class ImagesView(View):
 
         # Open and send the corresponding image
         image_data = BytesIO()
-        images[image_number].save(image_data, format='PNG')
+        self.images[image_number].save(image_data, format='PNG')
         image_data.seek(0)
         file = discord.File(fp=image_data, filename=f'image_{image_number}.png')
 
-        await interaction.response.send_message(content = "testing", file=file)        
+        await interaction.response.send_message(content = "testing", file=file)    
 
 
 #Defines the collect slash command
