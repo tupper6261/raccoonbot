@@ -288,7 +288,7 @@ async def shop(ctx: Context):
     embed.add_field(name="Backpack", value="Price: 1500\nThe backpack has even more room for trash - if you get caught, you still bring home half of your collected trash!")
     
     view = ShopView(ctx.author.id, balance, has_backpack, has_fanny_pack)
-    await ctx.send(embed=embed, view=view)
+    await ctx.respond(embed=embed, view=view)
 
 #This command resets a user's cooldown for testing or troubleshooting purposes
 @bot.slash_command(guild_ids=[raccoonGuildID], description = "Reset a user's cooldown.")
