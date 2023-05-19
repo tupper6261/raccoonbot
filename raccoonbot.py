@@ -350,7 +350,8 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     embed.set_image(url=uploaded_image_url)
 
     #Update the original response with the new image
-    response = await message1.edit_original_message(content = "", embed = embed)
+    response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n"+uploaded_image_url, embed = embed)
+    await message2.edit(content = "Testing...")
 
     # Get the necessary IDs
     server_id = ctx.guild.id
@@ -364,7 +365,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! Jump to Message --> {jump_url}")
 
     #Delete the "loading" etc. messages to keep the channel clean.
-    await message2.delete()
+    #await message2.delete()
     await message3.delete()
     await uploaded_image.delete()                    
 
