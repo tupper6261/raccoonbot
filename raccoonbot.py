@@ -21,6 +21,7 @@ import asyncio
 import replicate
 from io import BytesIO
 from PIL import Image
+from PIL import UnidentifiedImageError
 
 from web3 import Web3
 
@@ -347,7 +348,10 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     # Load the images and store them in a list
     images = []
     for url in output:
-        images.append(Image.open(BytesIO(requests.get(url).content)))
+        try:
+            images.append(Image.open(BytesIO(requests.get(url).content)))
+        except UnidentifiedImageError:
+            print(f"Cannot identify image file at URL: {url}")
 
      # Create a new image to combine the four images
     combined_image = Image.new('RGB', (images[0].width * 2, images[0].height * 2))
