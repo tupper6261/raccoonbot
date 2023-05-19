@@ -1,5 +1,5 @@
 #RaCC0on Bot. Copyright Timothy Marshall Upper, 2023. All Rights Reserved.
-#Version 2.1 - April 11, 2022
+#Version 2.2 - April 26, 2022
 
 from __future__ import print_function
 import os
@@ -10,6 +10,7 @@ import discord
 from discord.ext import commands
 from discord.ui import Button, View, Select
 from discord.commands import Option
+from discord.ext.commands import Context
 from dotenv import load_dotenv
 import psycopg2
 import json
@@ -26,6 +27,8 @@ load_dotenv()
 
 TOKEN = os.getenv('BOT_TOKEN')
 DATABASETOKEN = os.getenv('DATABASE_URL')
+trashCollectChannel = 1076613455357952090
+raccoonGuildID = 960007772903194624
 
 #To be honest, I don't know enough about what the below does, I just know it's what Google told me to do XD
 #I would think I'm initializing a Client object, but I never call it again, so....
@@ -36,13 +39,56 @@ intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix="+", intents=intents)
 
+#Class definition to handle the shop view
+class ShopView(View):
+    def __init__(self, user_id, balance, has_backpack, has_fanny_pack):
+        super().__init__()
+        self.user_id = user_id
+        self.has_backpack = has_backpack
+        self.has_fanny_pack = has_fanny_pack
+
+        backpack_price = 1500
+        fanny_pack_price = 500
+
+        self.add_item(Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < backpack_price))
+        self.add_item(Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < fanny_pack_price))
+
+    async def on_click(self, interaction: Interaction):
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("This isn't your menu!", ephemeral=True)
+            return
+        item_id = interaction.data["custom_id"]
+        conn = psycopg2.connect(DATABASETOKEN, sslmode='require')
+        cur = conn.cursor()
+        if item_id == "buy_backpack":
+            cur.execute("update raccooncollect set backpack = True where discord_user_id = {0}".format(interaction.user.id))
+            self.balance = self.balance - backpack_price
+            cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
+            item = "backpack"
+        elif item_id == "buy_fanny_pack":
+            cur.execute("update raccooncollect set fannypackpack = True where discord_user_id = {0}".format(interaction.user.id))
+            self.balance = self.balance - fanny_pack_price
+            cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
+            item = "fanny pack"
+
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        await interaction.response.send_message("You bought a " + item + "!", ephemeral=True)
+        
+
+
 #Defines the collect slash command
-@bot.slash_command(guild_ids=[960007772903194624], description = "Collect trash")
+@bot.slash_command(guild_ids=[raccoonGuildID], description = "Collect trash")
 async def collect(ctx):
-    if ctx.channel.id != 1076613455357952090:
+    if ctx.channel.id != trashCollectChannel:
         return
 
+    #set constant variables
     userCollectCooldown = 50
+    fannyPackTrash = 150
+    backPackTrash = .5
 
     interaction = True
     if str(type(ctx)) == "<class 'discord.commands.context.ApplicationContext'>":
@@ -81,18 +127,34 @@ async def collect(ctx):
         eligibleToClaim = account[1]
         balance = account[2]
         collectCooldown = account[4]
+        fannyPack = account[5]
+        backpack = account[6]
     embed = discord.Embed(color=0x000000)
     if eligibleToClaim <= int(time.time()):
         currentTime = int(time.time()*10)
         if collectCooldown <= currentTime:
             if outcome > 90:
                 embed.description = "<@" + str(member.id) + ">, you were spotted by the restaurant owner! You drop all your trash and flee."
+                safeBalance = 0
+                #If the user has a fanny pack, then move some trash from their total balance to their safe balance
+                if fannyPack:
+                    if balance <= fannyPackTrash:
+                        safeBalance = balance
+                        balance = 0
+                    else:
+                        safeBalance = fannyPackTrash
+                        balance = balance - fannyPackTrash
+                #If the user has a backpack, then move some trash from their total balance to their safe balance
+                if backpack:
+                    balanceToSave = int(balance * backpackTrash)
+                    safeBalance = safeBalance + balanceToSave
+                    balance = balance - balanceToSave
                 if interaction:
                     await ctx.response.send_message(embed = embed, view = view)
                 else:
                     await ctx.respond(embed = embed, view = view)
                 await ctx.channel.send("https://tenor.com/view/raccoon-escape-viralhog-running-away-fail-fall-gif-17821787")
-                command = "update raccooncollect set balance = 0 where discord_user_id = {0}".format(member.id)
+                command = "update raccooncollect set balance = {0} where discord_user_id = {1}".format(safeBalance, member.id)
                 cur.execute(command)
                 conn.commit()
                 command = "update raccooncollect set cooldown_time = {0} where discord_user_id = {1}".format(int(time.time())+10800,member.id)
@@ -169,10 +231,39 @@ async def collect(ctx):
         embed = discord.Embed(description = leaderboardString, color=0x000000)
         await channel.send(embed = embed)
 
+# Add this function after your 'collect' function
+@bot.slash_command(guild_ids=[raccoonGuildID], description="Visit the shop")
+async def shop(ctx: Context):
+    # Retrieve the user's balance and whether they own a backpack or fanny pack
+    conn = psycopg2.connect(DATABASETOKEN, sslmode='require')
+    cur = conn.cursor()
+    command = "select * from raccooncollect where discord_user_id = {0}".format(ctx.author.id)
+    cur.execute(command)
+    status = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    if status:
+        balance = status[0][2]
+        has_backpack = status[0][6] 
+        has_fanny_pack = status[0][5]
+    else:
+        balance = 0
+        has_backpack = False
+        has_fanny_pack = False
+
+    # Create the shop embed and custom view
+    embed = discord.Embed(title="Shop", description="Buy items to improve your trash collecting abilities!", color=0x000000)
+    embed.add_field(name="Backpack", value="Price: 1000\nIncrease the amount of trash you can keep when spotted by the restaurant owner.")
+    embed.add_field(name="Fanny Pack", value="Price: 500\nIncrease your safe balance by 150.")
+
+    view = ShopView(ctx.author.id, balance, has_backpack, has_fanny_pack)
+    await ctx.send(embed=embed, view=view)
+
 #This command resets a user's cooldown for testing or troubleshooting purposes
-@bot.slash_command(guild_ids=[960007772903194624], description = "Reset a user's cooldown.")
+@bot.slash_command(guild_ids=[raccoonGuildID], description = "Reset a user's cooldown.")
 async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you want to reset?")):
-    guild = bot.get_guild(960007772903194624)
+    guild = bot.get_guild(raccoonGuildID)
     #if the user isn't tupper, don't let them run the command
     if ctx.author.id != 710139786404298822:
         response = random.randint(1,5)
@@ -207,7 +298,7 @@ def run_replicate(prompt):
     )
 
 #Defines the clone slash command
-@bot.slash_command(guild_ids=[960007772903194624], description="Generate a RaCC0on clone")
+@bot.slash_command(guild_ids=[raccoonGuildID], description="Generate a RaCC0on clone")
 async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like to generate")):
     originalPrompt = prompt
     prompt = "racc0ons, full_body, " + prompt

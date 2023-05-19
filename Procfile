@@ -1,1 +1,2 @@
-worker1: python3 trashCollect.py
+worker1: python3 raccoonbot.py
+worker2: python3 testBot.py

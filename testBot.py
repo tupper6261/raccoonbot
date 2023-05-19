@@ -1,5 +1,5 @@
 #RaCC0on Bot. Copyright Timothy Marshall Upper, 2023. All Rights Reserved.
-#Version 2.0 - March 30, 2022
+#Version 2.1 - April 11, 2022
 
 from __future__ import print_function
 import os
@@ -17,27 +17,31 @@ import requests
 import datetime
 import asyncio
 import replicate
+from io import BytesIO
+from PIL import Image
 
 from web3 import Web3
 
 load_dotenv()
 
-TOKEN = "MTA3NTQ2MTkyODc3Mzc0NjczOA.Gj5IzS.BtZKoVJeABzYfJ753ayEvTsBjTp0EwtwhWOsuo" #os.getenv('NIFTYS_BOT_TOKEN')
-DATABASETOKEN = "postgres://udccp1sgn1f3bd:p11806fcba44af233f288b1c19a92b5eb09b3e3270c7bdf8106f3456445d59c52@ec2-34-193-55-145.compute-1.amazonaws.com:5432/d5id2nagt1gcg6" #os.getenv('DATABASE_URL')
+TOKEN = os.getenv('TEST_BOT_TOKEN')
+DATABASETOKEN = os.getenv('DATABASE_URL')
+trashCollectChannel = 1095426593482088510
+raccoonGuildID = 934164225025249290
 
 #To be honest, I don't know enough about what the below does, I just know it's what Google told me to do XD
 #I would think I'm initializing a Client object, but I never call it again, so....
 client = discord.Client()
-#This one tells the bot to look for commands that start with ! (ie. !fight)
+#Declare the bot's intents and initialize it
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix="+", intents=intents)
 
 #Defines the collect slash command
-@bot.slash_command(guild_ids=[960007772903194624], description = "Collect trash")
+@bot.slash_command(guild_ids=[raccoonGuildID], description = "Collect trash")
 async def collect(ctx):
-    if ctx.channel.id != 1076613455357952090:
+    if ctx.channel.id != trashCollectChannel:
         return
 
     userCollectCooldown = 50
@@ -72,6 +76,8 @@ async def collect(ctx):
         balance = 0
         eligibleToClaim = int(time.time())
         collectCooldown = int(time.time()*10)
+        fannyPack = False
+        backpack = False
     else:
         account = status[0]
         eligibleToClaim = account[1]
@@ -165,9 +171,10 @@ async def collect(ctx):
         embed = discord.Embed(description = leaderboardString, color=0x000000)
         await channel.send(embed = embed)
 
-@bot.slash_command(guild_ids=[960007772903194624], description = "Reset a user's cooldown.")
+#This command resets a user's cooldown for testing or troubleshooting purposes
+@bot.slash_command(guild_ids=[raccoonGuildID], description = "Reset a user's cooldown.")
 async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you want to reset?")):
-    guild = bot.get_guild(960007772903194624)
+    guild = bot.get_guild(raccoonGuildID)
     #if the user isn't tupper, don't let them run the command
     if ctx.author.id != 710139786404298822:
         response = random.randint(1,5)
@@ -184,6 +191,7 @@ async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you
         return
     
     uid = user.id
+    #Connect to the database and reset the cooldown
     conn = psycopg2.connect(DATABASETOKEN, sslmode='require')
     cur = conn.cursor()
     command = "update raccooncollect set cooldown_time = {0} where discord_user_id = {1}".format(int(time.time()), uid)
@@ -193,38 +201,83 @@ async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you
     conn.close()
     await ctx.respond(user.mention + "'s cooldown has been reset!")
 
+#Replicate API call is defined as a function here so it can be run asynchronously later
 def run_replicate(prompt):
     return replicate.run(
         "doriancollier/raccoon1:831081aba81a2194d5a003eb225d8b2f33b435b6948a3038ca507aa71866abe8",
-        input={"prompt": prompt}
+        input={"prompt": prompt, "num_outputs": 4, "height": 512, "width": 512}
     )
 
 #Defines the clone slash command
-@bot.slash_command(guild_ids=[960007772903194624], description = "Generate a RaCC0on clone")
+@bot.slash_command(guild_ids=[raccoonGuildID], description="Generate a RaCC0on clone")
 async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like to generate")):
     originalPrompt = prompt
     prompt = "racc0ons, full_body, " + prompt
-    assignmentView = View(timeout = None)
-    assignmentEmbed = discord.Embed(color = 0x000000)
-    assignmentEmbed.title = "Loading..."
-    assignmentEmbed.description = "This could take up to 5 minutes."
-    #message = await ctx.send("test")
-    #'''
-    message = await ctx.respond(embed = assignmentEmbed, view = assignmentView)
+    assignmentView = View(timeout=None)
+    #Let the user know the request has been received
+    message1 = await ctx.respond("**Loading...**")
+    message2 = await ctx.channel.send("https://tenor.com/view/raccoon-gif-5614710")
+    message3 = await ctx.channel.send("This could take up to 5 minutes.")
 
+    #These are static pngs I've used for testing, and I keep them here just in case
+    '''
+    output = [
+        'https://www.iconsdb.com/icons/preview/black/square-xxl.png',
+        'https://www.cac.cornell.edu/wiki/images/4/44/White_square.png',
+        'https://i.ibb.co/0sF1B1W/blue-square.png',
+        'https://upload.wikimedia.org/wikipedia/commons/9/9b/Greensquare.png'
+    ]
+    '''
     output = await asyncio.to_thread(run_replicate, prompt)
-    #output = ['https://images-ext-1.discordapp.net/external/Mgf4UJ0ClaO01b5F6nJA16wCUHPxDOsegO_IolMRi-c/https/replicate.delivery/pbxt/qVHemwTShB1ydqUE4KnpNXhzonSah3p3pKSCj3BhDpGtznWIA/out-0.png?width=530&height=530',
-    #         'https://images-ext-1.discordapp.net/external/gt18GJZ7vTvYZ_bPaDCNTmO7XwEUlwkAzWl4fsdA6bY/https/replicate.delivery/pbxt/VilfLcywetr7vk8eCPMGvDtP9456DnwwtgON4Fd5AQ66Lf0CB/out-0.png?width=530&height=530']
 
-    #await ctx.channel.send(ctx.author.mention + ", 4 results are given below!")
-    #for image in output:
-    assignmentEmbed.title = originalPrompt
-    assignmentEmbed.description = ""
-    assignmentEmbed.set_image(url=output[0])
-    #await ctx.channel.send(embed = assignmentEmbed)
-    await message.edit_original_message(embed = assignmentEmbed)
-    #'''
-                    
+    # Load the images and store them in a list
+    images = []
+    for url in output:
+        images.append(Image.open(BytesIO(requests.get(url).content)))
+
+     # Create a new image to combine the four images
+    combined_image = Image.new('RGB', (images[0].width * 2, images[0].height * 2))
+
+    # Paste the images onto the new image
+    combined_image.paste(images[0], (0, 0))
+    combined_image.paste(images[1], (images[0].width, 0))
+    combined_image.paste(images[2], (0, images[0].height))
+    combined_image.paste(images[3], (images[0].width, images[0].height))
+
+    # Save the combined image to a BytesIO object
+    image_data = BytesIO()
+    combined_image.save(image_data, format='PNG')
+    image_data.seek(0)
+
+    # Upload the image to Discord as an attachment
+    image_file = discord.File(image_data, 'combined_image.png')
+    uploaded_image = await ctx.channel.send(file=image_file)
+
+    # Get the URL of the uploaded image
+    uploaded_image_url = uploaded_image.attachments[0].url
+
+    # Create an embed with the uploaded image as its image field
+    embed = discord.Embed(title=originalPrompt, color = 0x000000)
+    embed.set_image(url=uploaded_image_url)
+
+    #Update the original response with the new image
+    response = await message1.edit_original_message(content = "", embed = embed)
+
+    # Get the necessary IDs
+    server_id = ctx.guild.id
+    channel_id = ctx.channel.id
+    message_id = response.id
+
+    # Create the jump URL
+    jump_url = f"https://discord.com/channels/{server_id}/{channel_id}/{message_id}"
+
+    #Ping the user and let them know their images are ready and include the jump url. 
+    await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! Jump to Message --> {jump_url}")
+
+    #Delete the "loading" etc. messages to keep the channel clean.
+    await message2.delete()
+    await message3.delete()
+    await uploaded_image.delete()                    
 
 #Runs the bot using the TOKEN defined in the environmental variables.         
 bot.run(TOKEN)
