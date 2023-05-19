@@ -78,9 +78,10 @@ class ShopView(View):
 
         await interaction.response.send_message("You bought a " + item + "!", ephemeral=True)
 
-class ImagesView(View, images):
-    def __init__(self):
+class ImagesView(View):
+    def __init__(self, images):
         super().__init__()
+        self.images = images
 
         for i in range(4):
             self.add_item(Button(style=ButtonStyle.primary, label=f"Image {i+1}", custom_id=f"image_{i}"))
@@ -376,7 +377,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     #Update the original response with the new image
     '''
     response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n", file=image_file)
-    button_view = ButtonView()
+    button_view = ButtonView(images)
     await message2.edit(content="Click a button to see the corresponding image full-size:", view=button_view)
 
     # Get the necessary IDs
