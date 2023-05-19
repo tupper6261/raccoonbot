@@ -106,7 +106,7 @@ class ImagesView(View):
         image_data.seek(0)
         file = discord.File(fp=image_data, filename=f'image_{image_number}.png')
 
-        await interaction.response.send_message(content = "testing", file=file)    
+        await interaction.response.send_message(content = "", file=file)    
 
 
 #Defines the collect slash command
@@ -283,10 +283,10 @@ async def shop(ctx: Context):
         has_fanny_pack = False
 
     # Create the shop embed and custom view
-    embed = discord.Embed(title="Shop", description="Buy items to improve your trash collecting abilities!", color=0x000000)
-    embed.add_field(name="Backpack", value="Price: 1000\nIncrease the amount of trash you can keep when spotted by the restaurant owner.")
-    embed.add_field(name="Fanny Pack", value="Price: 500\nIncrease your safe balance by 150.")
-
+    embed = discord.Embed(title="Shop", description="Buy items to improve your trash collecting abilities! Item buffs stack.", color=0x000000)
+    embed.add_field(name="Fanny Pack", value="Price: 500\nThe fanny pack can hold up to 150 pieces of trash, so even if you get caught, you get to bring some trash home!")
+    embed.add_field(name="Backpack", value="Price: 1500\nThe backpack has even more room for trash - if you get caught, you still bring home half of your collected trash!")
+    
     view = ShopView(ctx.author.id, balance, has_backpack, has_fanny_pack)
     await ctx.send(embed=embed, view=view)
 
