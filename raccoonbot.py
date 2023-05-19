@@ -77,7 +77,28 @@ class ShopView(View):
         conn.close()
 
         await interaction.response.send_message("You bought a " + item + "!", ephemeral=True)
-        
+
+class ImagesView(View, images):
+    def __init__(self):
+        super().__init__()
+
+        for i in range(4):
+            self.add_item(Button(style=ButtonStyle.primary, label=f"Image {i+1}", custom_id=f"image_{i}"))
+
+    async def interaction_check(self, interaction: Interaction) -> bool:
+        return interaction.user == interaction.message.author
+
+    async def on_click(self, interaction: Interaction):
+        # Find the image number from the button's custom_id
+        image_number = int(interaction.data["custom_id"].split('_')[1])
+
+        # Open and send the corresponding image
+        image_data = BytesIO()
+        images[image_number].save(image_data, format='PNG')
+        image_data.seek(0)
+        file = discord.File(fp=image_data, filename=f'image_{image_number}.png')
+
+        await interaction.response.send_message(file=file)        
 
 
 #Defines the collect slash command
@@ -355,7 +376,8 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     #Update the original response with the new image
     '''
     response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n", file=image_file)
-    await message2.edit(content = "Testing...")
+    button_view = ButtonView()
+    await message2.edit(content="Click a button to see the corresponding image full-size:", view=button_view)
 
     # Get the necessary IDs
     server_id = ctx.guild.id
