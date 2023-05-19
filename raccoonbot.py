@@ -90,8 +90,10 @@ class ImagesView(View):
         return interaction.user == interaction.message.author
 
     async def on_click(self, interaction: Interaction):
+        print ("here")
         # Find the image number from the button's custom_id
         image_number = int(interaction.data["custom_id"].split('_')[1])
+        print (image_number)
 
         # Open and send the corresponding image
         image_data = BytesIO()
@@ -99,7 +101,7 @@ class ImagesView(View):
         image_data.seek(0)
         file = discord.File(fp=image_data, filename=f'image_{image_number}.png')
 
-        await interaction.response.send_message(file=file)        
+        await interaction.response.send_message(content = "testing", file=file)        
 
 
 #Defines the collect slash command
