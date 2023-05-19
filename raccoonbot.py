@@ -340,7 +340,8 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     image_data.seek(0)
 
     # Upload the image to Discord as an attachment
-    image_file = discord.File(image_data, 'combined_image.png')
+    #image_file = discord.File(image_data, 'combined_image.png')
+    image_file = discord.File(fp=image_data, filename='combined_image.png')
     '''
     uploaded_image = await ctx.channel.send(file=image_file)
 
