@@ -332,15 +332,15 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     message3 = await ctx.channel.send("This could take up to 5 minutes.")
 
     #These are static pngs I've used for testing, and I keep them here just in case
-    '''
+    
     output = [
         'https://www.iconsdb.com/icons/preview/black/square-xxl.png',
         'https://www.cac.cornell.edu/wiki/images/4/44/White_square.png',
         'https://i.ibb.co/0sF1B1W/blue-square.png',
         'https://upload.wikimedia.org/wikipedia/commons/9/9b/Greensquare.png'
     ]
-    '''
-    output = await asyncio.to_thread(run_replicate, prompt)
+    
+    #output = await asyncio.to_thread(run_replicate, prompt)
 
     # Load the images and store them in a list
     images = []
