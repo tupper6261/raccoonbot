@@ -351,7 +351,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     embed.set_image(url=uploaded_image_url)
 
     #Update the original response with the new image
-    response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n"+uploaded_image_url, embed = embed)
+    response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n"+uploaded_image_url)
     await message2.edit(content = "Testing...")
 
     # Get the necessary IDs
