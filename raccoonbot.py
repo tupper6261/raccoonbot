@@ -80,7 +80,7 @@ class ShopView(View):
 
 class ImagesView(View):
     def __init__(self, images):
-        super().__init__()
+        super().__init__(timeout = None)
         self.images = images
 
         for i in range(4):
