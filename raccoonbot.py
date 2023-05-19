@@ -377,7 +377,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     #Update the original response with the new image
     '''
     response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n", file=image_file)
-    button_view = ButtonView(images)
+    button_view = ImagesView(images)
     await message2.edit(content="Click a button to see the corresponding image full-size:", view=button_view)
 
     # Get the necessary IDs
