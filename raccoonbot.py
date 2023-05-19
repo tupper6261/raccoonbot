@@ -87,9 +87,6 @@ class ImagesView(View):
         for i in range(4):
             self.add_item(Button(style=discord.ButtonStyle.primary, label=f"Image {i+1}", custom_id=f"image_{i}"))
 
-    async def interaction_check(self, interaction: Interaction) -> bool:
-        return interaction.user == interaction.message.author
-
     async def on_click(self, interaction: Interaction):
         print ("here")
         # Find the image number from the button's custom_id
