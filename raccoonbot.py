@@ -44,18 +44,24 @@ bot = commands.Bot(command_prefix="+", intents=intents)
 #Class definition to handle the shop view
 class ShopView(View):
     def __init__(self, user_id, balance, has_backpack, has_fanny_pack):
-        super().__init__()
+        super().__init__(timeout = None)  # I've also added timeout = None here.
         self.user_id = user_id
+        self.balance = balance
         self.has_backpack = has_backpack
         self.has_fanny_pack = has_fanny_pack
 
         backpack_price = 1500
         fanny_pack_price = 500
 
-        self.add_item(Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < backpack_price))
-        self.add_item(Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < fanny_pack_price))
+        backpack_button = Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < backpack_price)
+        backpack_button.callback = self.on_button_click
+        self.add_item(backpack_button)
+        
+        fanny_pack_button = Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < fanny_pack_price)
+        fanny_pack_button.callback = self.on_button_click
+        self.add_item(fanny_pack_button)
 
-    async def on_click(self, interaction: Interaction):
+    async def on_button_click(self, interaction: Interaction):
         if interaction.user.id != self.user_id:
             await interaction.response.send_message("This isn't your menu!", ephemeral=True)
             return
@@ -366,20 +372,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     image_data.seek(0)
 
     # Upload the image to Discord as an attachment
-    #image_file = discord.File(image_data, 'combined_image.png')
     image_file = discord.File(fp=image_data, filename='combined_image.png')
-    '''
-    uploaded_image = await ctx.channel.send(file=image_file)
-
-    # Get the URL of the uploaded image
-    uploaded_image_url = uploaded_image.attachments[0].url
-
-    # Create an embed with the uploaded image as its image field
-    embed = discord.Embed(title=originalPrompt, color = 0x000000)
-    embed.set_image(url=uploaded_image_url)
-
-    #Update the original response with the new image
-    '''
     response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n", file=image_file)
     button_view = ImagesView(images)
     await message2.edit(content="Click a button to see the corresponding image full-size:", view=button_view)
@@ -395,10 +388,8 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     #Ping the user and let them know their images are ready and include the jump url. 
     await ctx.channel.send(f"{ctx.author.mention}, 4 results are ready! Jump to Message --> {jump_url}")
 
-    #Delete the "loading" etc. messages to keep the channel clean.
-    #await message2.delete()
-    await message3.delete()
-    #await uploaded_image.delete()                    
+    #Delete the "this could take up to 5 minutes message to keep the channel clean.
+    await message3.delete()                
 
 #Runs the bot using the TOKEN defined in the environmental variables.         
 bot.run(TOKEN)
