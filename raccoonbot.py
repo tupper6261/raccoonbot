@@ -84,7 +84,7 @@ class ImagesView(View):
         self.images = images
 
         for i in range(4):
-            self.add_item(Button(style=ButtonStyle.primary, label=f"Image {i+1}", custom_id=f"image_{i}"))
+            self.add_item(Button(style=discord.ButtonStyle.primary, label=f"Image {i+1}", custom_id=f"image_{i}"))
 
     async def interaction_check(self, interaction: Interaction) -> bool:
         return interaction.user == interaction.message.author
