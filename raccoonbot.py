@@ -341,6 +341,7 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
 
     # Upload the image to Discord as an attachment
     image_file = discord.File(image_data, 'combined_image.png')
+    '''
     uploaded_image = await ctx.channel.send(file=image_file)
 
     # Get the URL of the uploaded image
@@ -351,7 +352,8 @@ async def clone(ctx, prompt: Option(str, "Describe the RaCC0on clone you'd like 
     embed.set_image(url=uploaded_image_url)
 
     #Update the original response with the new image
-    response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n", file=uploaded_image_url)
+    '''
+    response = await message1.edit_original_message(content = "**" + originalPrompt + "**\n", file=image_file)
     await message2.edit(content = "Testing...")
 
     # Get the necessary IDs
