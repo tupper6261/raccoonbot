@@ -43,6 +43,9 @@ bot = commands.Bot(command_prefix="+", intents=intents)
 
 #Class definition to handle the shop view
 class ShopView(View):
+    backpack_price = 1500
+    fanny_pack_price = 500
+    
     def __init__(self, user_id, balance, has_backpack, has_fanny_pack):
         super().__init__(timeout = None)  # I've also added timeout = None here.
         self.user_id = user_id
@@ -50,16 +53,13 @@ class ShopView(View):
         self.has_backpack = has_backpack
         self.has_fanny_pack = has_fanny_pack
 
-        backpack_price = 1500
-        fanny_pack_price = 500
+        fanny_pack_button = Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < fanny_pack_price)
+        fanny_pack_button.callback = self.on_button_click
+        self.add_item(fanny_pack_button)
 
         backpack_button = Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < backpack_price)
         backpack_button.callback = self.on_button_click
         self.add_item(backpack_button)
-        
-        fanny_pack_button = Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < fanny_pack_price)
-        fanny_pack_button.callback = self.on_button_click
-        self.add_item(fanny_pack_button)
 
     async def on_button_click(self, interaction: Interaction):
         if interaction.user.id != self.user_id:
