@@ -45,7 +45,7 @@ bot = commands.Bot(command_prefix="+", intents=intents)
 class ShopView(View):
     
     def __init__(self, user_id, balance, has_backpack, has_fanny_pack):
-        super().__init__(timeout = None)  # I've also added timeout = None here.
+        super().__init__(timeout = None)
         self.user_id = user_id
         self.balance = balance
         self.has_backpack = has_backpack
@@ -63,6 +63,11 @@ class ShopView(View):
         backpack_button.callback = self.on_button_click
         self.add_item(backpack_button)
 
+    def refresh_buttons(self):
+        # Disable the buttons if the user already has the item or can't afford it
+        self.fanny_pack_button.disabled = self.has_fanny_pack or self.balance < self.fanny_pack_price
+        self.backpack_button.disabled = self.has_backpack or self.balance < self.backpack_price
+
     async def on_button_click(self, interaction: Interaction):
         if interaction.user.id != self.user_id:
             await interaction.response.send_message("This isn't your menu!", ephemeral=True)
@@ -71,11 +76,13 @@ class ShopView(View):
         conn = psycopg2.connect(DATABASETOKEN, sslmode='require')
         cur = conn.cursor()
         if item_id == "buy_backpack":
+            self.has_backpack = True
             cur.execute("update raccooncollect set backpack = True where discord_user_id = {0}".format(interaction.user.id))
             self.balance = self.balance - self.backpack_price
             cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
             item = "backpack"
         elif item_id == "buy_fanny_pack":
+            self.has_fanny_pack = True
             cur.execute("update raccooncollect set fannypack = True where discord_user_id = {0}".format(interaction.user.id))
             self.balance = self.balance - self.fanny_pack_price
             cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
