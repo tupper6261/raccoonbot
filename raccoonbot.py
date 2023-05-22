@@ -298,8 +298,16 @@ async def shop(ctx: Context):
 
     # Create the shop embed and custom view
     embed = discord.Embed(title="Shop", description="Buy items to improve your trash collecting abilities! Item buffs stack.", color=0x000000)
-    embed.add_field(name="Fanny Pack", value="Price: 500\nThe fanny pack can hold up to 150 pieces of trash, so even if you get caught, you get to bring some trash home!")
-    embed.add_field(name="Backpack", value="Price: 1500\nThe backpack has even more room for trash - if you get caught, you still bring home half of your collected trash!")
+    if has_fanny_pack:
+        name = "Fanny Pack - Owned"
+    else:
+        name = "Fanny Pack"
+    embed.add_field(name=name, value="Price: 500\nThe fanny pack can hold up to 150 pieces of trash, so even if you get caught, you get to bring some trash home!")
+    if has_backpack:
+        name = "Backpack - Owned"
+    else:
+        name = "Backpack"
+    embed.add_field(name=name, value="Price: 1500\nThe backpack has even more room for trash - if you get caught, you still bring home half of your collected trash!")
     
     view = ShopView(ctx.author.id, balance, has_backpack, has_fanny_pack)
     await ctx.respond(embed=embed, view=view)
