@@ -177,6 +177,7 @@ async def collect(ctx):
     if eligibleToClaim <= int(time.time()):
         currentTime = int(time.time()*10)
         if collectCooldown <= currentTime:
+            print (outcome)
             if outcome > 90:
                 embed.description = "<@" + str(member.id) + ">, you were spotted by the restaurant owner! You drop all your trash and flee."
                 safeBalance = 0
