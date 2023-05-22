@@ -43,8 +43,6 @@ bot = commands.Bot(command_prefix="+", intents=intents)
 
 #Class definition to handle the shop view
 class ShopView(View):
-    backpack_price = 1500
-    fanny_pack_price = 500
     
     def __init__(self, user_id, balance, has_backpack, has_fanny_pack):
         super().__init__(timeout = None)  # I've also added timeout = None here.
@@ -53,11 +51,15 @@ class ShopView(View):
         self.has_backpack = has_backpack
         self.has_fanny_pack = has_fanny_pack
 
-        fanny_pack_button = Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < fanny_pack_price)
+        #items
+        self.backpack_price = 1500
+        self.fanny_pack_price = 500
+
+        fanny_pack_button = Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < self.fanny_pack_price)
         fanny_pack_button.callback = self.on_button_click
         self.add_item(fanny_pack_button)
 
-        backpack_button = Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < backpack_price)
+        backpack_button = Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < self.backpack_price)
         backpack_button.callback = self.on_button_click
         self.add_item(backpack_button)
 
@@ -70,12 +72,12 @@ class ShopView(View):
         cur = conn.cursor()
         if item_id == "buy_backpack":
             cur.execute("update raccooncollect set backpack = True where discord_user_id = {0}".format(interaction.user.id))
-            self.balance = self.balance - backpack_price
+            self.balance = self.balance - self.backpack_price
             cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
             item = "backpack"
         elif item_id == "buy_fanny_pack":
             cur.execute("update raccooncollect set fannypack = True where discord_user_id = {0}".format(interaction.user.id))
-            self.balance = self.balance - fanny_pack_price
+            self.balance = self.balance - self.fanny_pack_price
             cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
             item = "fanny pack"
 
