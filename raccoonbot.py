@@ -55,12 +55,12 @@ class ShopView(View):
         self.backpack_price = 1500
         self.fanny_pack_price = 500
 
-        fanny_pack_button = Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < self.fanny_pack_price)
-        fanny_pack_button.callback = self.on_button_click
+        self.fanny_pack_button = Button(label="Buy Fanny Pack", style=discord.ButtonStyle.blurple, custom_id="buy_fanny_pack", disabled=self.has_fanny_pack or self.balance < self.fanny_pack_price)
+        self.fanny_pack_button.callback = self.on_button_click
         self.add_item(fanny_pack_button)
 
-        backpack_button = Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < self.backpack_price)
-        backpack_button.callback = self.on_button_click
+        self.backpack_button = Button(label="Buy Backpack", style=discord.ButtonStyle.blurple, custom_id="buy_backpack", disabled=self.has_backpack or self.balance < self.backpack_price)
+        self.backpack_button.callback = self.on_button_click
         self.add_item(backpack_button)
 
     def refresh_buttons(self):
