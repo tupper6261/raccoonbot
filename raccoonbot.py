@@ -74,7 +74,7 @@ class ShopView(View):
             cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
             item = "backpack"
         elif item_id == "buy_fanny_pack":
-            cur.execute("update raccooncollect set fannypackpack = True where discord_user_id = {0}".format(interaction.user.id))
+            cur.execute("update raccooncollect set fannypack = True where discord_user_id = {0}".format(interaction.user.id))
             self.balance = self.balance - fanny_pack_price
             cur.execute("update raccooncollect set balance = {0} where discord_user_id = {1}".format(self.balance, interaction.user.id))
             item = "fanny pack"
