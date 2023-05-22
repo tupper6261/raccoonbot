@@ -92,6 +92,11 @@ class ShopView(View):
         conn.commit()
         conn.close()
 
+        # Refresh the buttons after a purchase
+        self.refresh_buttons()
+        # Update the message with the updated view
+        await interaction.message.edit(view=self)  
+
         await interaction.response.send_message("You bought a " + item + "!", ephemeral=True)
 
 class ImagesView(View):
