@@ -1,5 +1,5 @@
 #RaCC0on Bot. Copyright Timothy Marshall Upper, 2023. All Rights Reserved.
-#Version 2.2 - April 26, 2022
+#Version 2.3 - May 22, 2022
 
 from __future__ import print_function
 import os
@@ -177,7 +177,6 @@ async def collect(ctx):
     if eligibleToClaim <= int(time.time()):
         currentTime = int(time.time()*10)
         if collectCooldown <= currentTime:
-            print (outcome)
             if outcome > 90:
                 embed.description = "<@" + str(member.id) + ">, you were spotted by the restaurant owner! You drop all your trash and flee."
                 safeBalance = 0
