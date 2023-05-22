@@ -191,7 +191,7 @@ async def collect(ctx):
                         balance = balance - fannyPackTrash
                 #If the user has a backpack, then move some trash from their total balance to their safe balance
                 if backpack:
-                    balanceToSave = int(balance * backpackTrash)
+                    balanceToSave = int(balance * backPackTrash)
                     safeBalance = safeBalance + balanceToSave
                     balance = balance - balanceToSave
                 if interaction:
