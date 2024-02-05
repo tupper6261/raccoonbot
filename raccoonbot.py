@@ -30,7 +30,11 @@ load_dotenv()
 TOKEN = os.getenv('BOT_TOKEN')
 DATABASETOKEN = os.getenv('DATABASE_URL')
 trashCollectChannel = 1076613455357952090
+leaderboardChannel = 1076615144672591962
 raccoonGuildID = 960007772903194624
+potassiumGuildID = 930990319078637591
+potassiumTrashCollectChannel = 1202725149808533576
+potassiumLeaderboardChannel = 1202726026027868263
 
 #To be honest, I don't know enough about what the below does, I just know it's what Google told me to do XD
 #I would think I'm initializing a Client object, but I never call it again, so....
@@ -124,9 +128,9 @@ class ImagesView(View):
 
 
 #Defines the collect slash command
-@bot.slash_command(guild_ids=[raccoonGuildID], description = "Collect trash")
+@bot.slash_command(guild_ids=[raccoonGuildID, potassiumGuildID], description = "Collect trash")
 async def collect(ctx):
-    if ctx.channel.id != trashCollectChannel:
+    if ctx.channel.id != trashCollectChannel and ctx.channel.id != potassiumTrashCollectChannel:
         return
 
     #set constant variables
@@ -264,7 +268,10 @@ async def collect(ctx):
             leaderboardUpdate=True
         i+=1
     if leaderboardUpdate:
-        channel = discord.utils.get(ctx.guild.channels, id=1076615144672591962)
+        if ctx.guild.id == raccoonGuildID:
+            channel = discord.utils.get(ctx.guild.channels, id=leaderboardChannel)
+        if ctx.guild.id == potassiumGuildID:
+            channel = discord.utils.get(ctx.guild.channels, id = potassiumLeaderboardChannel)
         i = 0
         leaderboardString = ""
         while i < iMax:
@@ -275,8 +282,7 @@ async def collect(ctx):
         embed = discord.Embed(description = leaderboardString, color=0x000000)
         await channel.send(embed = embed)
 
-# Add this function after your 'collect' function
-@bot.slash_command(guild_ids=[raccoonGuildID], description="Visit the shop")
+@bot.slash_command(guild_ids=[raccoonGuildID, potassiumGuildID], description="Visit the shop")
 async def shop(ctx: Context):
     # Retrieve the user's balance and whether they own a backpack or fanny pack
     conn = psycopg2.connect(DATABASETOKEN, sslmode='require')
@@ -313,7 +319,7 @@ async def shop(ctx: Context):
     await ctx.respond(embed=embed, view=view)
 
 #This command resets a user's cooldown for testing or troubleshooting purposes
-@bot.slash_command(guild_ids=[raccoonGuildID], description = "Reset a user's cooldown.")
+@bot.slash_command(guild_ids=[raccoonGuildID, potassiumGuildID], description = "Reset a user's cooldown.")
 async def resetcooldown(ctx, user: Option(discord.Member, "Whose cooldown do you want to reset?")):
     guild = bot.get_guild(raccoonGuildID)
     #if the user isn't tupper, don't let them run the command
